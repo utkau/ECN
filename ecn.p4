@@ -43,13 +43,23 @@ header tcp_t {
     bit<32> ackNo;
     bit<4>  dataOffset;
     bit<3>  res;
-    bit<3>  ecn;
+    // ECN-nonce concealment protection (congestion avoidment)
+    bit<1>  ns;
+    
+    // Congestion Window Reduced flag set by the sending host who received an ECE flag 
+    bit<1>  cwr;
+    
+    // ECN-Echo (SYN = 1, TCP peer is ECN capable; SYN = 0, ECN = 11, indication of network congestion)
+    bit<1>  ece;
+
     bit<6>  ctrl;
     bit<16> window;
     bit<16> checksum;
     bit<16> urgentPtr;
 }
 struct metadata {
+    ip4Addr_t sourceIP;
+    bit<16> sourcePort;
 }
 
 struct headers {
@@ -148,10 +158,17 @@ control MyEgress(inout headers hdr,
         if (hdr.ipv4.ecn == 1 || hdr.ipv4.ecn == 2){
             if (standard_metadata.enq_qdepth >= ECN_THRESHOLD){
                 mark_ecn();
+                metadata.sourceIP = hdr.ipv4.srcAddr;
+                metadata.sourcePort = hdr.tcp.srcPort;
             }
         }
-        if(hdr.tcp.ctrl & 16 != 0){
-
+        if(hdr.tcp.ctrl & 16 != 0 && hdr.ipv4.dstAddr == metadata.sourceIP 
+            && hdr.tcp.dstPort == metadata.sourcePort && hdr.ipv4.ecn == 3){
+            hdr.tcp.ece = 1;
+            hdr.ipv4.ecn = 0;
+        }
+        if(hdr.tcp.ctrl & 16 != 0 && hdr.tcp.cwr == 1 && hdr.ipv4.srcAddr == metadata.sourceIP){
+            hdr.tcp.cwr = 0;
         }
     }
 }
