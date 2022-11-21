@@ -58,8 +58,6 @@ header tcp_t {
     bit<16> urgentPtr;
 }
 struct metadata {
-    ip4Addr_t sourceIP;
-    bit<16> sourcePort;
 }
 
 struct headers {
@@ -151,6 +149,8 @@ control MyIngress(inout headers hdr,
 control MyEgress(inout headers hdr,
                  inout metadata meta,
                  inout standard_metadata_t standard_metadata) {
+    register<bit<32>>(1) source_ip_register;
+    register<bit<16>>(1) source_port_register;
     action mark_ecn() {
         hdr.ipv4.ecn = 3;
     }
@@ -158,16 +158,22 @@ control MyEgress(inout headers hdr,
         if (hdr.ipv4.ecn == 1 || hdr.ipv4.ecn == 2){
             if (standard_metadata.enq_qdepth >= ECN_THRESHOLD){
                 mark_ecn();
-                metadata.sourceIP = hdr.ipv4.srcAddr;
-                metadata.sourcePort = hdr.tcp.srcPort;
+                source_ip_register.write(0, hdr.ipv4.srcAddr);
+                source_port_register.write(0, hdr.tcp.srcPort);
             }
         }
-        if(hdr.tcp.ctrl & 16 != 0 && hdr.ipv4.dstAddr == metadata.sourceIP 
-            && hdr.tcp.dstPort == metadata.sourcePort && hdr.ipv4.ecn == 3){
+        bit<32> source_ip_register_value;
+        bit<16> source_port_register_value;
+
+        source_ip_register.read(source_ip_register_value, 0);
+        source_port_register.read(source_port_register_value, 0);
+
+        if(hdr.tcp.ctrl & 16 != 0 && hdr.ipv4.dstAddr ==  source_port_register_value
+            && hdr.tcp.dstPort == source_port_register_value && hdr.ipv4.ecn == 3){
             hdr.tcp.ece = 1;
             hdr.ipv4.ecn = 0;
         }
-        if(hdr.tcp.ctrl & 16 != 0 && hdr.tcp.cwr == 1 && hdr.ipv4.srcAddr == metadata.sourceIP){
+        if(hdr.tcp.ctrl & 16 != 0 && hdr.tcp.cwr == 1 && hdr.ipv4.srcAddr == source_ip_register_value){
             hdr.tcp.cwr = 0;
         }
     }
