@@ -168,7 +168,7 @@ control MyEgress(inout headers hdr,
         source_ip_register.read(source_ip_register_value, 0);
         source_port_register.read(source_port_register_value, 0);
 
-        if(hdr.tcp.ctrl & 16 != 0 && hdr.ipv4.dstAddr ==  source_port_register_value
+        if(hdr.tcp.ctrl & 16 != 0 && hdr.ipv4.dstAddr ==  source_ip_register_value
             && hdr.tcp.dstPort == source_port_register_value && hdr.ipv4.ecn == 3){
             hdr.tcp.ece = 1;
             hdr.ipv4.ecn = 0;
