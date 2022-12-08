@@ -64,3 +64,12 @@ In addition, we have implemented the code to calculate RTT for the experiment.
 [jiabhi_complex_p4_ecn.ipynb] tests the Enhanced ECN (over P4) based TCP congestion control for the Complex Topology used for this experiment ![Topology](Complex-Topology.png). 
 <br/>This notebook is not complete and requires changes for successful deployment on FABRIC.
 This is work in progress.
+
+Mininet Setup:
+The following steps need to be followed to install Mininet:
+- Create an EC2 instance of type t2.large (2 vCPU and 8GB memory) with a 20GB Elastic Block Store (EBS) hard disk and Ubuntu 18.04 as OS.
+- Create a session in PuTTY with the instance's IP address and under SSH -> Auth -> X11 check Enable X11 forwarding.
+- Add your private key file to Paegant and log in to the instance.
+- Run sudo apt-get update.
+- Run sudo apt-get install mininet.
+- Verify mininet installation using mn --version.
