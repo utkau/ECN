@@ -5,7 +5,7 @@ import sys
 from time import sleep
 
 
-from scapy.all import IP, TCP, Ether, get_if_hwaddr, get_if_list, sendp
+from scapy.all import IP, TCP, Ether, get_if_hwaddr, get_if_list, sendp, sr1
 
 
 def get_if():
@@ -25,18 +25,21 @@ def main():
     if len(sys.argv)<3:
         print('pass 2 arguments: <destination> "<message>"')
         exit(1)
-
+    avgrtt = 0
     addr = socket.gethostbyname(sys.argv[1])
     iface = get_if()
 
     print("sending on interface %s to %s" % (iface, str(addr)))
-    pkt =  Ether(src=get_if_hwaddr(iface), dst='ff:ff:ff:ff:ff:ff')
-    pkt = pkt /IP(dst=addr) / TCP(dport=1234, sport=random.randint(49152,65535)) / sys.argv[2]
+    pkt = IP(dst=addr) / TCP(dport=1234, flags = "S")
     pkt.show2()
+   
     try:
       for i in range(int(sys.argv[3])):
-        sendp(pkt, iface=iface)
-        sleep(1)
+         a = sr1(pkt)
+         print(a.time - pkt.sent_time)
+         avgrtt += (a.time - pkt.sent_time)
+         sleep(1)
+      print("Average RTT = ", avgrtt/sys.argv[3])
     except KeyboardInterrupt:
         raise
 
