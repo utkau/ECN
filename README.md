@@ -1,6 +1,6 @@
 # Enhanced ECN Implementation
 
-###Introduction
+### Introduction
 
 This projects covers the implementation of enhanced ECN using P4 programming. 
 
@@ -30,20 +30,22 @@ traffic and modify the ECN-echo bit of the incoming ACK packet.
 
 The motivation for this idea comes from the [paper](https://ieeexplore.ieee.org/document/9058340/)
 
-###Topology
+### Topology
 We use the following topology for our experiment:
 ![Topology](https://github.com/p4lang/tutorials/blob/master/exercises/ecn/setup.png)
 
-###Implementation
-ecn.p4 contains the main implementation of the enhanced ECN approach.
-The default parameters for this experiment are taken from [P4lang Tutorial](https://github.com/p4lang/tutorials/tree/master/exercises/ecn) 
+Steps to invoke congestion in the network:
 - send a low rate traffic from h1 to h2
 - send a high rate iperf traffic from h11 to h22
 - The link (bandwidth: 512 Kbps) between s1 and s2 serves as a bottleneck in the network.
+
+### Implementation
+ecn.p4 contains the main implementation of the enhanced ECN approach.
+The default parameters for this experiment are taken from [P4lang Tutorial](https://github.com/p4lang/tutorials/tree/master/exercises/ecn) 
 
 The above-mentioned tutorial uses UDP for testing ECN over the Topology.
 Hence, we have modified send.py and receive.py to test the topology over TCP.
 In addition, we have implemented the code to calculate RTT for the experiment.
 
-###Mininet Deployment
+### Mininet Deployment
 
