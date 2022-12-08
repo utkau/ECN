@@ -49,3 +49,18 @@ In addition, we have implemented the code to calculate RTT for the experiment.
 
 ### Mininet Deployment
 
+
+
+### FABRIC Files
+[jiabhi_tcp.ipynb] tests the TCP default congestion control (AIMD) for the Romeo-Juliet ![Topology](romeo-juliet.png). 
+This can simply be uploaded on the FABRIC and executed. The notebook covers installing end-to-end dependencies on the network nodes.
+
+[jiabhi_tcp_ecn.ipynb] tests the ECN based TCP congestion control for the Romeo-Juliet ![Topology](romeo-juliet.png). 
+This can simply be uploaded on the FABRIC and executed. The notebook covers installing end-to-end dependencies on the network nodes.
+
+[jiabhi_tcp_ecn.ipynb] tests the ECN based TCP congestion control for the Complex Topology used for this experiment ![Topology](Complex-Topology.png). 
+This can simply be uploaded on the FABRIC and executed. The notebook covers installing end-to-end dependencies on the network nodes.
+
+[jiabhi_complex_p4_ecn.ipynb] tests the Enhanced ECN (over P4) based TCP congestion control for the Complex Topology used for this experiment ![Topology](Complex-Topology.png). 
+This notebook is not complete and requires changes for successful deployment on FABRIC.
+This is work in progress.
